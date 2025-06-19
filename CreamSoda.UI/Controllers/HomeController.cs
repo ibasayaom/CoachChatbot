@@ -1,12 +1,9 @@
 using System.ClientModel;
 using System.Diagnostics;
-using System.Text.Json;
-using Azure;
 using Azure.AI.OpenAI;
-using Azure.Identity;
+using Core.Abstractions.Services;
 using CreamSoda.UI.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 
 namespace CreamSoda.UI.Controllers
@@ -14,29 +11,12 @@ namespace CreamSoda.UI.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ChatClient _chatClient;
-        private readonly ChatCompletionOptions _options = new ChatCompletionOptions
-        {
-            Temperature = (float)0.7,
-            MaxOutputTokenCount = 800,
-            TopP = (float)0.95,
-            FrequencyPenalty = (float)0,
-            PresencePenalty = (float)0
-        };
+        private readonly IBotService _botService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IBotService botService)
         {
             _logger = logger;
-            var endpoint = "https://mission-ctrl-resource.openai.azure.com/";
-            // Use DefaultAzureCredential for Entra ID authentication
-            var credential = new ApiKeyCredential("CPZv1KFIgVIgqcUjK5aczFFfh1Z92KZHRGAWq0sN0nBFVFZlfdgGJQQJ99BFACHYHv6XJ3w3AAAAACOGpcSB");
-            // Initialize the AzureOpenAIClient
-            var azureClient = new AzureOpenAIClient(new Uri(endpoint), credential);
-            // Initialize the ChatClient with the specified deployment name
-            _chatClient = azureClient.GetChatClient("gpt-4o");
-
-
-
+            _botService = botService ?? throw new ArgumentNullException(nameof(botService));
         }
 
         public IActionResult Index()
@@ -49,7 +29,6 @@ namespace CreamSoda.UI.Controllers
             return View();
         }
 
-
         public JsonResult GetResponse(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -60,26 +39,12 @@ namespace CreamSoda.UI.Controllers
             var messages = new List<ChatMessage>    {
              new SystemChatMessage(@"You are an HR AI assistance. You name is CreamSoda and your purpose is to assist employees with their onboarding journey. "),
            new UserChatMessage(message)
-    };
+              };
 
-            // Create chat completion options
-            var options = new ChatCompletionOptions
-            {
-                Temperature = (float)0.7,
-                MaxOutputTokenCount = 800,
+            var completion = _botService.GetResponse(message);
 
-                TopP = (float)0.95,
-                FrequencyPenalty = (float)0,
-                PresencePenalty = (float)0
-            };
-
-            var completion = _chatClient.CompleteChatAsync(messages, _options).Result;
-
-            var response = completion.Value.Content[0].Text;
-            return Json(response);
+            return Json(completion);
         }
-
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

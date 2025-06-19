@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Services
+namespace Core.Abstractions.Services
 {
-    internal class FileName
+    public interface IBotService
     {
+        string GetResponse(string message);
     }
 }

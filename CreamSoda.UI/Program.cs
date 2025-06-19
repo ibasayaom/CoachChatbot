@@ -1,7 +1,11 @@
+using Core.Abstractions.Services;
+using Core.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IBotService, BotService>();
 
 var app = builder.Build();
 

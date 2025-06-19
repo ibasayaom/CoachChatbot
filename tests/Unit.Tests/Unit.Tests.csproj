@@ -15,7 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Api\Api.csproj" />
         <ProjectReference Include="..\..\src\Core\Core.csproj" />
     </ItemGroup>
 
@@ -31,6 +30,10 @@
     <ItemGroup>
       <Compile Remove="Infrastructure\HealthChecks\HealthCheckTestBase.cs" />
       <Compile Remove="Infrastructure\HealthChecks\DataHubFhirHealthCheckTests.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Core\Services\" />
     </ItemGroup>
 
 </Project>
