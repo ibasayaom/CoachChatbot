@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<script>
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (message === '') return;
+
+     // appendMessage('user', message);
+     // input.value = '';
+
+      // Send message to MVC controller
+      fetch('/Home/GetResponse', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `message=${encodeURIComponent(message)}`
+      })
+      .then(response => response.json())
+      .then(data => {
+       appendMessage('bot', data);
+       console.log(data);
+      })
+      .catch(error => {
+        appendMessage('bot', 'Error contacting server.');
+        console.error('Error:', error);
+      });
+    }
+
+
+    function appendMessage(sender, text) {
+      const chatBox = document.getElementById('chatBox');
+
+      // Add a horizontal line before each message
+      const separator = document.createElement('hr');
+      chatBox.appendChild(separator);
+
+      // Create and append the message div
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message ' + sender;
+      messageDiv.textContent = text;
+      chatBox.appendChild(messageDiv);
+
+      // Scroll to bottom
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+
+</script>
+
