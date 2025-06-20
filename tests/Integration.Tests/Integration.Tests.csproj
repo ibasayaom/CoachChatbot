@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
+        <PackageReference Include="Azure.AI.Agents.Persistent" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
         <PackageReference Include="DotNetEnv" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
